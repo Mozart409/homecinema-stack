@@ -1,0 +1,30 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.9.11
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./library:/config
+      - ./downloads:/data/movies
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+  pinchflat:
+    image: ghcr.io/kieraneglin/pinchflat:v2024.10.2
+    depends_on:
+      - jellyfin
+    environment:
+      # Set the timezone to your local timezone
+      - TZ=Europe/Berlin
+    ports:
+      - '8945:8945'
+    user: '1000:1000'
+    volumes:
+      - ./pinchflat_config:/config
+      - ./downloads:/downloads
